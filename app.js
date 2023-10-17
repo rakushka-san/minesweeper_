@@ -1,3 +1,5 @@
+import { Square } from './Square.js'
+
 document.addEventListener('DOMContentLoaded', () => {
 	const grid = document.querySelector('.grid')
 	const flagsLeft = document.querySelector('#flags-left')
@@ -13,16 +15,52 @@ document.addEventListener('DOMContentLoaded', () => {
 		flagsLeft.innerHTML = bombAmount
 
 		// получение списка, отражающего игровое поле и содержащего информацию о положении бомб
-		const bombsArray = Array(bombAmount).fill('bomb')
-		const emptyArray = Array(width * width - bombAmount).fill('valid')
-		const gameArray = emptyArray.concat(bombsArray)
-		const shuffledArray = gameArray.sort(() => Math.random() - 0.5)
+		const bombsArray = Array(bombAmount)
+		for (let i = 0; i < bombsArray.length; i++) {
+			bombsArray[i] = new Square(false)
+		}
+		const emptyArray = Array(width * width - bombAmount)
+		for (let i = 0; i < emptyArray.length; i++) {
+			emptyArray[i] = new Square(true)
+		}
+		const gameArray = emptyArray
+			.concat(bombsArray)
+			.sort(() => Math.random() - 0.5)
+
+		for (let index = 0; index < gameArray.length; index++) {
+			if (gameArray[index].isValid) {
+				let count = 0
+
+				const currentY = Math.floor(index / width)
+				const currentX = index % width
+
+				for (let i = -1; i <= 1; i++) {
+					for (let j = -1; j <= 1; j++) {
+						if (i === 0 && j === 0) continue
+
+						const checkingY = currentY + i
+						const checkingX = currentX + j
+
+						if (checkingY < 0 || checkingY >= width) continue
+						if (checkingX < 0 || checkingX >= width) continue
+
+						const checkingIndex = checkingY * width + checkingX
+
+						if (!gameArray[checkingIndex].isValid) {
+							count++
+						}
+					}
+				}
+
+				gameArray[index].bombsAround = count
+			}
+		}
 
 		// отрисовка игрового поля
 		for (let i = 0; i < width * width; i++) {
 			const square = document.createElement('div')
 			square.setAttribute('id', i)
-			square.classList.add(shuffledArray[i])
+			square.classList.add(gameArray[i].isValid ? 'valid' : 'bomb')
 			grid.appendChild(square)
 			squares.push(square)
 
@@ -35,47 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			square.oncontextmenu = function (e) {
 				e.preventDefault()
 				addFlag(square)
-			}
-		}
-
-		// вычисление числа окружающих бомб для каждой клетки
-		for (let i = 0; i < squares.length; i++) {
-			let total = 0
-			const isLeftEdge = i % width === 0
-			const isRightEdge = i % width === width - 1
-
-			if (squares[i].classList.contains('valid')) {
-				if (i > 0 && !isLeftEdge && squares[i - 1].classList.contains('bomb'))
-					total++
-				if (
-					i > 9 &&
-					!isRightEdge &&
-					squares[i + 1 - width].classList.contains('bomb')
-				)
-					total++
-				if (i > 10 && squares[i - width].classList.contains('bomb')) total++
-				if (
-					i > 11 &&
-					!isLeftEdge &&
-					squares[i - 1 - width].classList.contains('bomb')
-				)
-					total++
-				if (i < 98 && !isRightEdge && squares[i + 1].classList.contains('bomb'))
-					total++
-				if (
-					i < 90 &&
-					!isLeftEdge &&
-					squares[i - 1 + width].classList.contains('bomb')
-				)
-					total++
-				if (
-					i < 88 &&
-					!isRightEdge &&
-					squares[i + 1 + width].classList.contains('bomb')
-				)
-					total++
-				if (i < 89 && squares[i + width].classList.contains('bomb')) total++
-				squares[i].setAttribute('data', total)
 			}
 		}
 	}
