@@ -36,6 +36,7 @@ div {
 	background-color: #cecab7;
 	border-color: #9c998d;
 	box-sizing: border-box;
+	cursor: unset;
 }
 
 .cell-1 {
