@@ -10,10 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	let squares = []
 	let isGameOver = false
 
-	// создание игрового поля
-	function createBoard() {
+	// отрисовка
+	function render() {
 		flagsLeft.innerHTML = bombAmount
 
+		// отрисовка игрового поля
+		for (let i = 0; i < width * width; i++) {
+			const square = document.createElement('div')
+			square.setAttribute('id', i)
+			square.classList.add('cell')
+			grid.appendChild(square)
+			squares.push(square)
+		}
+
+		// обработка нажатия левой кнопкой мыши
+		grid.addEventListener('click', function (e) {
+			click(e.target)
+		})
+
+		// обработка нажатия правой кнопкой мыши
+		grid.oncontextmenu = function (e) {
+			e.preventDefault()
+			addFlag(e.target)
+		}
+	}
+
+	// создание игрового поля
+	function createBoard() {
 		// получение списка, отражающего игровое поле и содержащего информацию о положении бомб
 		const bombsArray = Array(bombAmount)
 		for (let i = 0; i < bombsArray.length; i++) {
@@ -55,28 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 				gameArray[index].bombsAround = count
 			}
 		}
-
-		// отрисовка игрового поля
-		for (let i = 0; i < width * width; i++) {
-			const square = document.createElement('div')
-			square.setAttribute('id', i)
-			square.classList.add(gameArray[i].isValid ? 'valid' : 'bomb')
-			grid.appendChild(square)
-			squares.push(square)
-
-			// обработка нажатия левой кнопкой мыши
-			square.addEventListener('click', function (e) {
-				click(square)
-			})
-
-			// обработка нажатия правой кнопкой мыши
-			square.oncontextmenu = function (e) {
-				e.preventDefault()
-				addFlag(square)
-			}
-		}
 	}
 	createBoard()
+	render()
 
 	// функция изменения состояния отметки клетки флагом
 	function addFlag(square) {
