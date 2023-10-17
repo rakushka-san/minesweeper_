@@ -26,6 +26,7 @@ div {
 	border: 5px solid;
 	border-color: #f5f3eb #bab7a9 #bab7a9 #fff9db;
 	box-sizing: border-box;
+	cursor: pointer;
 }
 
 .checked {

@@ -107,41 +107,42 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (gameArray[square.id].isChecked || gameArray[square.id].isFlagged) return
 		if (!gameArray[square.id].isValid) {
 			gameOver()
-		} else {
-			let total = gameArray[square.id].bombsAround
-			if (total != 0) {
-				square.classList.add('checked')
-				square.classList.add(`cell-${total}`)
-				square.innerHTML = total
-				return
-			}
-			// отрытие соседних клеток
-			checkSquare(square)
+			return
 		}
+		let total = gameArray[square.id].bombsAround
+		if (total != 0) {
+			square.classList.add(`cell-${total}`)
+			square.innerHTML = total
+
+			square.classList.add('checked')
+			gameArray[square.id].isChecked = true
+			return
+		}
+
 		square.classList.add('checked')
+		gameArray[square.id].isChecked = true
+		checkSquare(square)
 	}
 
 	// функция проверки соседних клеток
 	function checkSquare(square) {
-		setTimeout(() => {
-			const currentY = Math.floor(square.id / width)
-			const currentX = square.id % width
+		const currentY = Math.floor(square.id / width)
+		const currentX = square.id % width
 
-			for (let i = -1; i <= 1; i++) {
-				for (let j = -1; j <= 1; j++) {
-					if (i === 0 && j === 0) continue
+		for (let i = -1; i <= 1; i++) {
+			for (let j = -1; j <= 1; j++) {
+				if (i === 0 && j === 0) continue
 
-					const checkingY = currentY + i
-					const checkingX = currentX + j
+				const checkingY = currentY + i
+				const checkingX = currentX + j
 
-					if (checkingY < 0 || checkingY >= width) continue
-					if (checkingX < 0 || checkingX >= width) continue
+				if (checkingY < 0 || checkingY >= width) continue
+				if (checkingX < 0 || checkingX >= width) continue
 
-					const checkingIndex = checkingY * width + checkingX
-					click(squares[checkingIndex])
-				}
+				const checkingIndex = checkingY * width + checkingX
+				click(squares[checkingIndex])
 			}
-		}, 0)
+		}
 	}
 
 	// функция оповещения о проигрыше
@@ -161,11 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	function checkForWin() {
 		let matches = 0
 		// поиск совпадений наличия бомбы и отметки-флага
-		for (let i = 0; i < squares.length; i++) {
-			if (
-				squares[i].classList.contains('flag') &&
-				squares[i].classList.contains('bomb')
-			) {
+		for (let i = 0; i < gameArray.length; i++) {
+			if (gameArray[i].isFlagged && !gameArray[i].isValid) {
 				matches++
 			}
 			if (matches === bombAmount) {
