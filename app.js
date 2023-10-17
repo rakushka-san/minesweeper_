@@ -103,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// функция открытия клетки
 	function click(square) {
-		let currentId = square.id
 		if (isGameOver) return
 		if (gameArray[square.id].isChecked || gameArray[square.id].isFlagged) return
 		if (!gameArray[square.id].isValid) {
@@ -117,65 +116,32 @@ document.addEventListener('DOMContentLoaded', () => {
 				return
 			}
 			// отрытие соседних клеток
-			checkSquare(square, currentId)
+			checkSquare(square)
 		}
 		square.classList.add('checked')
 	}
 
 	// функция проверки соседних клеток
-	function checkSquare(square, currentId) {
-		const isLeftEdge = currentId % width === 0
-		const isRightEdge = currentId % width === width - 1
-
+	function checkSquare(square) {
 		setTimeout(() => {
-			if (currentId > 0 && !isLeftEdge) {
-				const newId = squares[parseInt(currentId) - 1].id
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId > 9 && !isRightEdge) {
-				const newId = squares[parseInt(currentId) + 1 - width].id
+			const currentY = Math.floor(square.id / width)
+			const currentX = square.id % width
 
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId > 10) {
-				const newId = squares[parseInt(currentId - width)].id
+			for (let i = -1; i <= 1; i++) {
+				for (let j = -1; j <= 1; j++) {
+					if (i === 0 && j === 0) continue
 
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId > 11 && !isLeftEdge) {
-				const newId = squares[parseInt(currentId) - 1 - width].id
+					const checkingY = currentY + i
+					const checkingX = currentX + j
 
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId < 98 && !isRightEdge) {
-				const newId = squares[parseInt(currentId) + 1].id
+					if (checkingY < 0 || checkingY >= width) continue
+					if (checkingX < 0 || checkingX >= width) continue
 
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
+					const checkingIndex = checkingY * width + checkingX
+					click(squares[checkingIndex])
+				}
 			}
-			if (currentId < 90 && !isLeftEdge) {
-				const newId = squares[parseInt(currentId) - 1 + width].id
-
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId < 88 && !isRightEdge) {
-				const newId = squares[parseInt(currentId) + 1 + width].id
-
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-			if (currentId < 89) {
-				const newId = squares[parseInt(currentId) + width].id
-
-				const newSquare = document.getElementById(newId)
-				click(newSquare)
-			}
-		}, 10)
+		}, 0)
 	}
 
 	// функция оповещения о проигрыше
