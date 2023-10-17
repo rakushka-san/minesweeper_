@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (isGameOver) return
 		if (gameArray[square.id].isChecked || gameArray[square.id].isFlagged) return
 		if (!gameArray[square.id].isValid) {
-			gameOver(square)
+			gameOver()
 		} else {
 			let total = gameArray[square.id].bombsAround
 			if (total != 0) {
@@ -145,16 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// функция оповещения о проигрыше
-	function gameOver(square) {
+	function gameOver() {
 		result.innerHTML = 'BOOM! Game Over!'
 		isGameOver = true
 
 		// открытие всех бомб
-		squares.forEach(square => {
-			if (square.classList.contains('bomb')) {
+		squares.forEach((square, index) => {
+			if (!gameArray[index].isValid) {
 				square.innerHTML = '💣'
-				square.classList.remove('bomb')
-				square.classList.add('checked')
 			}
 		})
 	}
