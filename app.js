@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	let squares = []
 	let isGameOver = false
 
+	let gameArray = []
+
 	// отрисовка
 	function render() {
 		flagsLeft.innerHTML = bombAmount
@@ -46,9 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		for (let i = 0; i < emptyArray.length; i++) {
 			emptyArray[i] = new Square(true)
 		}
-		const gameArray = emptyArray
-			.concat(bombsArray)
-			.sort(() => Math.random() - 0.5)
+		gameArray = emptyArray.concat(bombsArray).sort(() => Math.random() - 0.5)
 
 		for (let index = 0; index < gameArray.length; index++) {
 			if (gameArray[index].isValid) {
@@ -85,15 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	// функция изменения состояния отметки клетки флагом
 	function addFlag(square) {
 		if (isGameOver) return
-		if (!square.classList.contains('checked') && flags < bombAmount) {
-			if (!square.classList.contains('flag')) {
-				square.classList.add('flag')
+		if (!gameArray[square.id].isChecked && flags < bombAmount) {
+			if (!gameArray[square.id].isFlagged) {
+				gameArray[square.id].isFlagged = true
 				square.innerHTML = ' 🚩'
 				flags++
 				flagsLeft.innerHTML = bombAmount - flags
 				checkForWin()
 			} else {
-				square.classList.remove('flag')
+				gameArray[square.id].isFlagged = false
 				square.innerHTML = ''
 				flags--
 				flagsLeft.innerHTML = bombAmount - flags
